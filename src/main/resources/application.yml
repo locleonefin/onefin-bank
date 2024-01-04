@@ -1,0 +1,227 @@
+server:
+  port: 8060
+  shutdown: graceful
+
+spring:
+  datasource:
+    # =================================== LOCAL ==============================================
+    #    url: jdbc:mariadb://192.168.223.6:3306/onefinbanks
+    #    username: root
+    #    password:
+    #    driver-class-name: org.mariadb.jdbc.Driver
+    #  jpa:
+    #    database-platform: org.hibernate.dialect.MariaDBDialect
+    #    show-sql: false
+    #    hibernate:
+    #      ddl-auto: create
+    # =================================== ONEFIN =============================================
+    url: jdbc:mariadb://172.16.14.103:3306/onefinbanks
+    username: onefin01
+    password: Matkhau@1
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MariaDBDialect
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+  lifecycle:
+    timeout-per-shutdown-phase: 130s
+  quartz:
+    job-store-type: jdbc #Database Mode
+    jdbc:
+      initialize-schema: never #Do not initialize table structure
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceId: AUTO #Default hostname and timestamp generate instance ID, which can be any string, but must be the only corresponding qrtz_scheduler_state INSTANCE_NAME field for all dispatchers
+            instanceName: connector-bank1 #quartzScheduler
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX #Persistence Configuration
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate #We only make database-specific proxies for databases
+            useProperties: false #Indicates that JDBC JobStore stores all values in JobDataMaps as strings, so more complex objects can be stored as name-value pairs rather than serialized in BLOB columns.In the long run, this is safer because you avoid serializing non-String classes to BLOB class versions.
+            tablePrefix: QRTZ_  #Database Table Prefix
+            misfireThreshold: 1000 #The number of milliseconds the dispatcher will "tolerate" a Trigger to pass its next startup time before being considered a "fire".The default value (if you do not enter this property in the configuration) is 60000 (60 seconds).
+            clusterCheckinInterval: 5000 #Set the frequency (in milliseconds) of this instance'checkin'* with other instances of the cluster.Affects the speed of detecting failed instances.
+            isClustered: true #Turn on Clustering
+          threadPool: #Connection Pool
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 25
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true
+  redis:
+    host: redis.onefin.in
+    port: 31442
+
+security:
+  oauth2:
+    resource:
+      userInfoUri: http://onefin-oauth2.onefin.in/user
+      additionalUri: http://onefin-oauth2.onefin.in/oauth/{token}/get/additionalInfo
+
+vcb:
+  linkbank:
+    account:
+      url: https://103.11.174.134/EWSRest/api/EWSPublic
+      partnerId: ONEFIN
+      defaultMasterAccount: 0
+      vcbPublicKey:
+        modulus: 5TXaYqXrybyGWUcLm4Ifaf5E+79wJqijpV2NVZsktJJzmBZlJ/twtPi/LKvbtn7b/U54/wJCzaU7asXlaKKG5oBVzZA13yKZyxMrdd/0iVmuiJMIZgv4HZOh/g2hS8EI/TzLMII0bgN3sJNAckvZZdIhucfLhwFBXF6jKRZgDI7u3YXMoRBLUQs+87XISMjL1Azk1xXZhXx+gwKYGvH5SMQhuqwDmnoBe8xQ+I6orHiTgcoYb6Qe+iUu4P/Km+OR4USi/bUvGOcOSDOEiFr1OQ6AdoPdv0JscfuK2QKmgsf82X3bh5s/Cf09dyskf9SkS0DiA87bi3uZWX10rihBUw==
+        exponent: AQAB
+      ofPrivateKey:
+        modulus: tSCIGqHTHVnyzaGUumEWMQZznX24X8MqABhOA9YLeCUISQ1Dkxpxq+59yo/zyWaxWJix7mHdm+OUIHCgSPln3+4YCH4lZHVBOlRMQlA9cKeVT2AP9vkT3LLc+646UYotDzM2aBAcEXxqySDrKB7ItsQvpItlfJ8YQ0ULx5BE6Iuu3c0Slkc3iKMhtQ6mpdqOoBwf83f3Lv9FFCf/gONF+/RQLbsGkFwL56q0QUORkLOjy76/buVClPwI/RHvplee9VeOotr6xnoSgIbOL2eW0FclDveqbTH9e36lxpKnqm71AN8xCuZP/fomAeII3RRd/F5DjObaCSU/RYywPWJomw==
+        d: AqUX97OXPp16ozAR2OrkBRFADPOyBov2CAxSz1GH11hLF63+554CPO19nsCdYbqDKnUIXB/HuagIGLUsUgR6VNXIOg+FgkMIEc77UhiT3RpFXuRbN1MJzDY8bdxsc5Zd9BPeXoSltEep04gMhwh0C98vhuqWL8yu8QSIGIDt0Kt7Ny7HpHgsaebGxcWZBgosCrGRSl3SQCikU+edUcbRGjKZve5PNrKTBq897I0m9fOgbRLRdtYABkGsIXysyfFr6V1Z3wX35+JCOmjBRLtZxYxIYrJ8IGX+AZdUw6yNTHDfqOpIzwQJPrmZh1POrOrEjltXc+2Fcc8v7jt1/CxpAQ==
+      secure:
+        hashAlgorithm: SHA1
+        passwordIterations: 2
+        keySize: 256
+        passPhrase: p%Cf5S^z
+        saltValue: a@VE1W2%
+        initVector: '%cr9Z4ial*I$hJkl'
+      vcb2OfBaseUrl: http://core-ewallet.onefin.in/
+      activeAccount: true
+      activeCard: true
+    card:
+      baseUrl: https://mtf.onepay.vn/vcb
+      accessKeyId: TESTID
+      secretAccessKey: B9QGRV3BUHRN6PUC
+      region: vcb
+      service: tsp
+      userGroupId: VCB
+      requestTimeout: 180
+      mpin: 686868
+      terminalId: '79050009'
+      merchantId: '000106800000983'
+      email: tttt@onefin.vn
+      uri:
+        lookupUser: /tsp/api/v1/users/{0}
+        searchUser: /tsp/api/v1/users?group={0}&reference={1}
+        createUser: /tsp/api/v1/users
+        deleteUser: /tsp/api/v1/users/{0}
+        createInstruments: /tsp/api/v1/instruments
+        authorizeInstruments: /tsp/api/v1/authorizations/{0}
+        deleteInstrument: /tsp/api/v1/instruments/{0}
+        createPayment: /tsp/api/v1/payments
+        authorizePayment: /tsp/api/v1/authorizations/{0}
+        lookupPayment: /tsp/api/v1/payments/{0}
+        searchPayment: /tsp/api/v1/payments?group={0}&merchant_id={1}&merchant_txn_ref={2}
+        withdraw: /tsp/api/v1/cashouts
+
+vietin:
+  floorBalance: 200000000
+  linkbank:
+    onefinPrivateKey: C:\Users\huynh\OneDrive\Documents\New folder\Git\onefin-repo\conn-ewallet-bank\src\main\resources\keys\Vietinbank-notify-onefin-private.der
+    vtbPublicKey: C:\Users\huynh\OneDrive\Documents\New folder\Git\onefin-repo\conn-ewallet-bank\src\main\resources\keys\Vietinbank_ITC2020.cer1
+    version: 1.0
+    merchantIdCard: 7001
+    merchantIdAccount: 7002
+    providerId: 777
+    ibmClientId: 9049dbd1-2f74-4df9-a0c6-4acb50bd3f01
+    xIbmClientSecret: uS7pQ2cV4yQ4iK7mT2mF6jH0wU3kA7pQ0lX8mF7kX3jO7kC2wV
+    url:
+      tokenIssue: https://api-uat.vietinbank.vn/vtb-api-uat/development/v1/ewallet/tokenIssue
+      verifyPin: https://api-uat.vietinbank.vn/vtb-api-uat/development/v1/ewallet/verifyPin
+      registerOnlinePay: https://api-uat.vietinbank.vn/vtb-api-uat/development/v1/ewallet/registerOnlinePay
+      tokenRevoke: https://api-uat.vietinbank.vn/vtb-api-uat/development/v1/ewallet/tokenRevoke
+      tokenReissue: https://api-uat.vietinbank.vn/vtb-api-uat/development/v1/ewallet/tokenReIssue
+      paymentByToken: https://api-uat.vietinbank.vn/vtb-api-uat/development/v1/ewallet/paymentByToken
+      paymentByOTP: https://api-uat.vietinbank.vn/vtb-api-uat/development/v1/ewallet/paymentByOTP
+      widthdraw: https://api-uat.vietinbank.vn/vtb-api-uat/development/v1/ewallet/withdraw
+      transactionInquiry: https://api-uat.vietinbank.vn/vtb-api-uat/development/v1/ewallet/transactionInquiry
+      providerInquiry: https://api-uat.vietinbank.vn/vtb-api-uat/development/v1/ewallet/providerInquiry
+      tokenIssuePayment: https://api-uat.vietinbank.vn/vtb-api-uat/development/v1/ewallet/tokenIssuer-payment
+      refund: https://api-uat.vietinbank.vn/vtb-api-uat/development/v1/ewallet/refund
+    alwaysTopupOTP: false
+    activeAccount: true
+    activeCard: true
+  bankTransfer:
+    onefinPrivateKey: E:\OneFin\source_code\OF_ewallet\conn-ewallet-bank\src\main\resources\keys\onefin-privatekey-uat-vietin.der
+    vtbPublicKey: E:\OneFin\source_code\OF_ewallet\conn-ewallet-bank\src\main\resources\keys\Vietinbank_ITC2020.cer1
+    apiVersion: 1.0.1
+    channel: WEB
+    clientIP: 14.241.228.156
+    merchantId: 777
+    providerId: 777
+    onefinAcctId: 100000088332, 100000088332
+    onefinBankId: 01201001, 01201001
+    ibmClientId: 9049dbd1-2f74-4df9-a0c6-4acb50bd3f01
+    xIbmClientSecret: uS7pQ2cV4yQ4iK7mT2mF6jH0wU3kA7pQ0lX8mF7kX3jO7kC2wV
+    forceVietinChannel: true
+    url:
+      paymentUrl: https://api-uat.vietinbank.vn/vtb-api-uat/development/disbursement/paymentDisbursementAdd
+      inquiryUrl: https://api-uat.vietinbank.vn/vtb-api-uat/development/disbursement/paymentDisbursementInq
+      accInquiryUrl: https://api-uat.vietinbank.vn/vtb-api-uat/development/disbursement/accountInfo
+      providerInquiryUrl: https://api-uat.vietinbank.vn/vtb-api-uat/development/disbursement/merchantAccountInfo
+  virtualAcct:
+    virtualAcctOnefinPrivateKey: E:\OneFin\source_code\OF_ewallet\sit-devops11\services\conn-ewallet-bank\keys\Vietinbank-notify-onefin-private.der
+    notifyOnefinPrivateKey: E:\OneFin\source_code\OF_ewallet\sit-devops11\services\conn-ewallet-bank\keys\Vietinbank-notify-onefin-private.der
+    notifyVtbPublicKey: E:\OneFin\source_code\OF_ewallet\conn-ewallet-bank\src\main\resources\keys\Vietinbank-notify-cert.der
+    billInqVtbPublicKey: E:\OneFin\source_code\OF_ewallet\sit-devops11\services\conn-ewallet-bank\keys\TEST_VIETINBANK_CERT.cer
+    apiVersion: 1.0
+    channel: WEB
+    clientIP: 14.241.228.156
+    merchantId: 777
+    providerId: 777
+    onefinAcctId: 119002630121
+    virtualAcctCode: 9OFN
+    ibmClientId: 9049dbd1-2f74-4df9-a0c6-4acb50bd3f01
+    xIbmClientSecret: uS7pQ2cV4yQ4iK7mT2mF6jH0wU3kA7pQ0lX8mF7kX3jO7kC2wV
+    url:
+      createVirtualAcct: https://api-uat.vietinbank.vn/vtb-api-uat/development/erp/v1/account/RegisterVA
+      updateVirtualAcct: https://api-uat.vietinbank.vn/vtb-api-uat/development/erp/v1/account/UpdateStsVA
+    pool:
+      expireIn: 30
+      expireBuffer: 10
+bvb:
+  IBFT:
+    onefinPrivateKey: C:\Users\huynh\OneDrive\Documents\New folder\Git\onefin-repo\conn-ewallet-bank\src\main\resources\keys\bvb\rsa_onefin_2048_priv.pem
+    bvbPublicKey: C:\Users\huynh\OneDrive\Documents\New folder\Git\onefin-repo\conn-ewallet-bank\src\main\resources\keys\bvb\BVBank_Onefin_UAT_2048_pub.pem
+    onefinMerchantCode: ONEF
+    onefinClientCode: ONEFINIBFT
+    channel: WEB
+    merchantId: ONEFINIBFT
+    onefinAcctId: 100000088332
+    onefinBankId: 79327001
+    url:
+      queryStatus: http://203.205.28.29:9202/processor/payment/querystatus
+      inquiry: http://203.205.28.29:9202/processor/payment/inquiry
+      fundTransfer: http://203.205.28.29:9202/processor/payment/fundTransfer
+      inquiryEscrowAccount: http://203.205.28.29:9202/processor/payment/inquiryEscrowAccount
+      uploadReconciliation: http://203.205.28.29:9202/processor/payment/uploadReconciliation
+  virtualAcct:
+    bearerToken: 66e21077-2d7c-3fc8-b87e-bcc61e65de54
+    bearerTokenProd: 43852d88-2002-3d4c-98f3-7d457a7fb017
+    privateKey: onefinPrivateKey
+    onefinPrivateKey: C:\Users\huynh\OneDrive\Documents\New folder\Git\onefin-repo\conn-ewallet-bank\src\main\resources\keys\bvb\rsa_onefin_2048_priv.pem
+    onefinPublicKey: C:\Users\huynh\OneDrive\Documents\New folder\Git\onefin-repo\conn-ewallet-bank\src\main\resources\keys\bvb\rsa_onefin_2048_pub.pem
+    bvbPublicKey: C:\Users\huynh\OneDrive\Documents\New folder\Git\onefin-repo\conn-ewallet-bank\src\main\resources\keys\bvb\BVB_VA_UAT_ONEFIN_pub.pem
+    partnerCode: ONEFIN
+    defaultAccType: O
+    url:
+      createVirtualAcct: https://wso2uat.vietcapitalbank.com.vn:8243/va-services/1.0/va/api/account/create
+      updateVirtualInfoAcct: https://wso2uat.vietcapitalbank.com.vn:8243/va-services/1.0/va/api/account/update
+      closeVirtualAcct: https://wso2uat.vietcapitalbank.com.vn:8243/va-services/1.0/va/api/account/close
+      checkDetailVirtualAcct: https://wso2uat.vietcapitalbank.com.vn:8243/va-services/1.0/va/api/account/detail
+      reopenVirtualAcct: https://wso2uat.vietcapitalbank.com.vn:8243/va-services/1.0/va/api/account/reopen
+      testVirtualAcct: https://wso2uat.vietcapitalbank.com.vn:8243/va-services/1.0/va/api/account/trans-init/test
+      validateCallback: https://wso2uat.vietcapitalbank.com.vn:8243/va-services/1.0/va/api/account/validate-callback
+      findVirtualAcctList: https://wso2uat.vietcapitalbank.com.vn:8243/va-services/1.0/va/api/account/list
+      searchTransByAccount: https://wso2uat.vietcapitalbank.com.vn:8243/va-services/1.0/va/api/account/trans-search
+transit:
+  url:
+    bankTransfer: http://onefin-transit-hub.onefin.in/bank/bankTransfer
+
+proxy:
+  active: true
+  host: 172.16.14.101
+  port: 3128
+  activeAuth: false
+  userName:
+  password:
+
+backup:
+  api:
+    uriVietinLinkBank: http://ewallet-backup-in.onefin.vn/backup/ewallet/vietinLinkBank
+    uriVcbLinkBank: http://ewallet-backup-in.onefin.vn/backup/ewallet/vcbLinkBank
+    uriVietinVirtualAcct: http://ewallet-backup-in.onefin.vn/backup/ewallet/vietinVirtualAcct
+    uriBvbVirtualAcct: http://ewallet-backup.onefin.in/backup/ewallet/bvbVirtualAcct
