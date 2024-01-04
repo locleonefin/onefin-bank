@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.onefin.ewallet.bank</groupId>
+	<artifactId>conn-ewallet-bank</artifactId>
+	<version>1.0.1</version>
+	<name>Connector Ewallet Bank</name>
+	<description>Connector Ewallet Bank</description>
+
+	<parent>
+		<groupId>com.onefin.ewallet</groupId>
+		<artifactId>conn-ewallet-common</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<properties>
+		<java.version>1.8</java.version>
+		<oauth2-autoconfig.version>2.0.0.RELEASE</oauth2-autoconfig.version>
+		<common-base.version>1.0.1</common-base.version>
+		<common-quartz.version>1.0.1</common-quartz.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>com.onefin.ewallet.common</groupId>
+			<artifactId>common-base</artifactId>
+			<version>${common-base.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.onefin.ewallet.common</groupId>
+			<artifactId>common-quartz</artifactId>
+			<version>${common-quartz.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security.oauth.boot</groupId>
+			<artifactId>spring-security-oauth2-autoconfigure</artifactId>
+			<version>${oauth2-autoconfig.version}</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<finalName>main</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skipTests>true</skipTests>
+					<encoding>UTF-8</encoding>
+					<!--					<source>${maven.compiler.source}</source>-->
+					<!--					<target>${maven.compiler.target}</target>-->
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
